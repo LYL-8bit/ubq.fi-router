@@ -68,12 +68,12 @@ describe('worker Deno service routing', () => {
   })
 
   test('appends the router revision footer to successful HTML app responses', async () => {
-    globalThis.fetch = (async () => new Response('<html><body><main>app</main></body></html>', {
+    globalThis.fetch = (async (_input: RequestInfo | URL, _init?: RequestInit) => new Response('<html><body><main>app</main></body></html>', {
       headers: {
         'content-length': '42',
         'content-type': 'text/html; charset=utf-8',
       },
-    })) as typeof fetch
+    })) as unknown as typeof fetch
 
     const res = await worker.fetch(new Request('https://pay.ubq.fi/'), {} as Env)
     const html = await res.text()
@@ -88,9 +88,9 @@ describe('worker Deno service routing', () => {
   })
 
   test('does not append the router revision footer to non-HTML responses', async () => {
-    globalThis.fetch = (async () => new Response('{"ok":true}', {
+    globalThis.fetch = (async (_input: RequestInfo | URL, _init?: RequestInit) => new Response('{"ok":true}', {
       headers: { 'content-type': 'application/json' },
-    })) as typeof fetch
+    })) as unknown as typeof fetch
 
     const res = await worker.fetch(new Request('https://pay.ubq.fi/api/status'), {} as Env)
     const body = await res.text()
